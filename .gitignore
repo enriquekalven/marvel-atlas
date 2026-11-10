@@ -1,0 +1,7 @@
+node_modules/
+.tts_cache/
+.firebase/
+*.log
+.DS_Store
+__pycache__/
+*.pyc

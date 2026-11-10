@@ -1,0 +1,190 @@
+/**
+ * Marvel Multiverse & Omnibus Atlas — Base Design System Tokens & Reset
+ * Authentic Marvel Bullpen Crimson, Mutant X-Gold, Cerebro Cyan, S.W.O.R.D. Obsidian,
+ * and 1963 Four-Color Newsprint Cream with WCAG AA contrast and zero purple-on-dark tropes.
+ */
+
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Default: S.W.O.R.D. / Nexus Night Theme */
+  color-scheme: dark;
+  --bg-canvas: #0a0e14;
+  --bg-surface: #121923;
+  --bg-surface-elevated: #1a2433;
+  --bg-surface-subtle: #0e141d;
+  --border-default: #28374c;
+  --border-strong: #3b516f;
+
+  --text-primary: #f4f7fb;
+  --text-secondary: #bcc9db;
+  --text-muted: #8b9db5;
+
+  /* Authentic Marvel Editorial Accents (Zero Purple-on-Dark) */
+  --accent-primary: #e62429;
+  --accent-primary-hover: #c81e23;
+  --accent-primary-soft: rgba(230, 36, 41, 0.16);
+  --accent-on-primary: #ffffff;
+
+  --accent-gold: #facc15;
+  --accent-gold-soft: rgba(250, 204, 21, 0.14);
+  --accent-cyan: #38bdf8;
+  --accent-cyan-soft: rgba(56, 189, 248, 0.14);
+  --accent-emerald: #22c55e;
+  --accent-emerald-soft: rgba(34, 197, 94, 0.14);
+  --accent-amber: #f59e0b;
+
+  --map-void: #070b11;
+  --map-sector: #131e2c;
+  --map-sector-stroke: #2f4663;
+  --map-tether: rgba(56, 189, 248, 0.35);
+  --map-incursion: rgba(230, 36, 41, 0.55);
+
+  --frame-bg: #0b1018;
+  --scrim-bg: rgba(4, 7, 12, 0.76);
+  --lightbox-backdrop: rgba(4, 7, 12, 0.92);
+  --lightbox-stage-bg: #090d14;
+  --shadow-sheet: 0 -14px 38px rgba(0, 0, 0, 0.58);
+  --shadow-bar: 0 -8px 24px rgba(0, 0, 0, 0.38);
+  --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.26);
+}
+
+html[data-theme="light"] {
+  /* 1963 Newsprint Omnibus Theme */
+  color-scheme: light;
+  --bg-canvas: #f6f2e8;
+  --bg-surface: #fffdf8;
+  --bg-surface-elevated: #efe8d8;
+  --bg-surface-subtle: #f3ede0;
+  --border-default: #d5c7ac;
+  --border-strong: #b39f7b;
+
+  --text-primary: #181615;
+  --text-secondary: #3f3b37;
+  --text-muted: #665e56;
+
+  --accent-primary: #b91c1c;
+  --accent-primary-hover: #991b1b;
+  --accent-primary-soft: rgba(185, 28, 28, 0.11);
+  --accent-on-primary: #ffffff;
+
+  --accent-gold: #92400e;
+  --accent-gold-soft: rgba(146, 64, 14, 0.11);
+  --accent-cyan: #0369a1;
+  --accent-cyan-soft: rgba(3, 105, 161, 0.11);
+  --accent-emerald: #15803d;
+  --accent-emerald-soft: rgba(21, 128, 61, 0.11);
+  --accent-amber: #b45309;
+
+  --map-void: #e6dfd0;
+  --map-sector: #fffcf5;
+  --map-sector-stroke: #8f7e60;
+  --map-tether: rgba(3, 105, 161, 0.38);
+  --map-incursion: rgba(185, 28, 28, 0.5);
+
+  --frame-bg: #e9e0ce;
+  --scrim-bg: rgba(24, 22, 21, 0.46);
+  --lightbox-backdrop: rgba(24, 22, 21, 0.82);
+  --lightbox-stage-bg: #f3ede0;
+  --shadow-sheet: 0 -12px 32px rgba(24, 22, 21, 0.18);
+  --shadow-bar: 0 -6px 18px rgba(24, 22, 21, 0.12);
+  --shadow-card: 0 3px 10px rgba(24, 22, 21, 0.07);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-padding-top: 5rem;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html[data-audience="kid"] body {
+  font-size: 16.5px;
+}
+
+html[data-audience="adult"] body {
+  font-size: 15.5px;
+}
+
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button,
+select {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  inset-inline-start: var(--space-4);
+  background: var(--accent-primary);
+  color: var(--accent-on-primary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  z-index: 1000;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: var(--space-3);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

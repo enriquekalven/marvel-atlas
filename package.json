@@ -1,0 +1,13 @@
+{
+  "name": "marvel-multiverse-atlas",
+  "version": "1.0.0",
+  "description": "Interactive Marvel Multiverse & Omnibus Portal — X-Men, Avengers, Spider-Verse, Fantastic Four, Cosmic Entities, 170+ Playable Multiverse Variants, Official 1-7 Power Grid, 1v1 Battleworld Arena, Nexus Map & Infinity Forge",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/atlas.test.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
