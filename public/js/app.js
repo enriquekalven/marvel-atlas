@@ -22,6 +22,7 @@
     el,
     createUiIconSvg,
     createComicCoverSvg,
+    createCollectorArtFrame,
     createPowerBarSvg,
     createOhotmuRadarSvg,
     createGridComparisonBars
@@ -342,8 +343,17 @@
       }
     });
 
-    const coverWrap = el('div', { className: 'char-cover-thumb-wrap' }, [
-      createComicCoverSvg(resolved)
+    const artEntry = ARTWORK.getArtworkForCharacter(ch.id);
+    const plate = ARTWORK.getPlateForVariant(ch.id, resolved.variantId);
+    const artStage = el('div', { className: 'char-card-art-stage' }, [
+      createCollectorArtFrame(resolved, plate, {
+        variant: 'card',
+        rarityClass: artEntry ? artEntry.rarityClass : 'key-issue',
+        showTopChips: true,
+        earthChip: resolved.earth,
+        badgeChip: ch.omegaMutant ? 'OMEGA' : plate && plate.isDistinctVariantArt ? 'VARIANT' : resolved.tier.badge,
+        badgeHighlight: Boolean(ch.omegaMutant || (plate && plate.isDistinctVariantArt))
+      })
     ]);
 
     const badges = el('div', { className: 'char-meta-badges' }, [
@@ -387,7 +397,8 @@
       createPowerBarSvg(resolved.powerScore)
     ]);
 
-    card.appendChild(el('div', { className: 'char-card-top' }, [coverWrap, identity]));
+    card.appendChild(artStage);
+    card.appendChild(identity);
     card.appendChild(
       el('div', {}, [
         el('div', { className: 'variant-strip-label', text: `${tr('variantsLabel')} (${resolved.availableVariants.length})` }),
@@ -593,8 +604,19 @@
     function buildFighterPicker(slotLabel, currentChar, currentVariantId, onCharChange, onVarChange) {
       const vars = MARVEL_HELPERS.getUnlockedVariants(currentChar, state.era);
       const resolved = MARVEL_HELPERS.resolveCharacterVariant(currentChar, currentVariantId, state.era);
+      const fighterArtEntry = ARTWORK.getArtworkForCharacter(currentChar.id);
+      const fighterPlate = ARTWORK.getPlateForVariant(currentChar.id, resolved.variantId);
       return el('div', { className: 'fighter-picker-box' }, [
         el('span', { className: 'kpi-label', text: slotLabel }),
+        createCollectorArtFrame(resolved, fighterPlate, {
+          variant: 'arena',
+          rarityClass: fighterArtEntry ? fighterArtEntry.rarityClass : 'key-issue',
+          showTopChips: true,
+          earthChip: resolved.earth,
+          badgeChip: `PWR ${resolved.powerScore}`,
+          badgeHighlight: resolved.powerScore >= 96,
+          captionText: `${currentChar.name} — ${resolved.variantName}`
+        }),
         el(
           'select',
           {
@@ -723,7 +745,7 @@
           ),
           el('div', { className: 'arena-mid-actions' }, [swapBtn, randomBtn]),
           buildFighterPicker(
-            'Challenger B (Cerebro Cyan Dashed ◆)',
+            'Challenger B (Cyan Dashed ◆)',
             charB,
             state.clashVariantB,
             (nextId) => {
@@ -1119,14 +1141,17 @@
         'button',
         {
           type: 'button',
-          className: 'vitrine-cover-btn',
+          className: 'vitrine-cover-btn is-vault',
           attrs: { 'aria-label': `Inspect ${ch.name} — ${plate.label} cover plate` },
           on: {
             click: (evt) => openLightbox(resolved, plate, evt.currentTarget)
           }
         },
         [
-          createComicCoverSvg(resolved),
+          createCollectorArtFrame(resolved, plate, {
+            variant: 'vault',
+            rarityClass: plate.rarityClass
+          }),
           el('span', { className: 'vitrine-zoom-hint', text: tr('zoomCover') })
         ]
       );
@@ -1225,7 +1250,10 @@
         }
       },
       [
-        createComicCoverSvg(resolved),
+        createCollectorArtFrame(resolved, plate, {
+          variant: 'inspector',
+          rarityClass: artEntry ? artEntry.rarityClass : 'key-issue'
+        }),
         el('span', { className: 'vitrine-zoom-hint', text: tr('zoomCover') })
       ]
     );
@@ -1402,7 +1430,12 @@
     );
 
     const dialogCard = el('div', { className: 'lightbox-dialog-card' }, [
-      el('div', { className: 'lightbox-cover-stage' }, [createComicCoverSvg(resolved)]),
+      el('div', { className: 'lightbox-cover-stage' }, [
+        createCollectorArtFrame(resolved, plate, {
+          variant: 'lightbox',
+          rarityClass: plate ? plate.rarityClass : 'omnibus-mythic'
+        })
+      ]),
       el('div', { className: 'collector-plaque' }, [
         el('span', {
           className: 'collector-plaque-heading',

@@ -746,12 +746,120 @@
     return wrap;
   }
 
+  /**
+   * Builds a museum-grade Collector Art Frame backed by self-hosted local Marvel artwork
+   * (./assets/art/*) with ambient blurred backdrop, portrait-safe focal framing, and
+   * automatic fallback to bespoke SVG cover plates if an image fails to load.
+   */
+  function createCollectorArtFrame(resolvedState, plate, options) {
+    const opts = options || {};
+    const ch = resolvedState.character;
+    const variant = opts.variant || 'card'; // 'card' | 'inspector' | 'arena' | 'vault' | 'lightbox'
+    const rarityClass = opts.rarityClass || (ch.powerScore >= 96 || ch.omegaMutant ? 'omnibus-mythic' : 'key-issue');
+    const altText =
+      opts.alt ||
+      `${ch.name} — ${resolvedState.variantName} (${resolvedState.earth}) Marvel comic artwork`;
+
+    const frame = el('div', {
+      className: `collector-art-frame variant-${variant} rarity-${rarityClass}`,
+      dataset: {
+        variant,
+        rarity: rarityClass
+      }
+    });
+
+    if (plate && plate.localPath) {
+      const backdropImg = el('img', {
+        className: 'collector-art-backdrop',
+        attrs: {
+          src: plate.localPath,
+          alt: '',
+          loading: 'lazy',
+          decoding: 'async',
+          'aria-hidden': 'true'
+        }
+      });
+
+      const isLandscapeArt =
+        plate.width && plate.height ? plate.width > plate.height * 1.15 : false;
+      const fitMode =
+        variant === 'lightbox'
+          ? 'contain'
+          : isLandscapeArt && (variant === 'inspector' || variant === 'vault')
+            ? 'contain'
+            : 'cover';
+
+      const mainImg = el('img', {
+        className: 'collector-art-img',
+        dataset: {
+          focal: plate.focalPoint || 'center 15%',
+          fit: fitMode,
+          variant
+        },
+        attrs: {
+          src: plate.localPath,
+          alt: altText,
+          loading: variant === 'inspector' || variant === 'lightbox' ? 'eager' : 'lazy',
+          decoding: 'async'
+        }
+      });
+
+      mainImg.addEventListener('error', () => {
+        backdropImg.remove();
+        mainImg.remove();
+        frame.appendChild(
+          el('div', { className: 'collector-art-fallback' }, [
+            createComicCoverSvg(resolvedState, altText)
+          ])
+        );
+      });
+
+      frame.appendChild(backdropImg);
+      frame.appendChild(mainImg);
+    } else {
+      frame.appendChild(
+        el('div', { className: 'collector-art-fallback' }, [
+          createComicCoverSvg(resolvedState, altText)
+        ])
+      );
+    }
+
+    if (opts.showTopChips) {
+      const overlay = el('div', { className: 'collector-frame-overlay-top' });
+      if (opts.earthChip) {
+        overlay.appendChild(
+          el('span', { className: 'collector-earth-chip tabular-nums', text: opts.earthChip })
+        );
+      }
+      if (opts.badgeChip) {
+        overlay.appendChild(
+          el('span', {
+            className: `collector-badge-chip${opts.badgeHighlight ? ' is-highlight' : ''}`,
+            text: opts.badgeChip
+          })
+        );
+      }
+      if (overlay.childNodes.length) {
+        frame.appendChild(overlay);
+      }
+    }
+
+    if (opts.captionText) {
+      frame.appendChild(
+        el('div', { className: 'collector-frame-caption', text: opts.captionText })
+      );
+    }
+
+    return frame;
+  }
+
   const exported = {
     clearEl,
     el,
     svgEl,
     createUiIconSvg,
     createComicCoverSvg,
+    createCollectorArtFrame,
     createPowerBarSvg,
     createOhotmuRadarSvg,
     createGridComparisonBars

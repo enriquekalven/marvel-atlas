@@ -3,7 +3,7 @@
  *
  * Generates museum-grade Omnibus provenance entries (MVO-001+) for every character and every
  * Multiverse variant, pairing creator credits, key-issue citations, and publication mediums
- * with bespoke vector Four-Color / Kirby-Krackle Cover Plates rendered by dom.js.
+ * with self-hosted local comic art plates (./assets/art/) and bespoke SVG fallback plates.
  */
 
 (function initMarvelArtwork(root) {
@@ -13,6 +13,11 @@
     typeof module !== 'undefined' && module.exports
       ? require('./characters.js')
       : root.MARVEL_CHARACTERS_DATA;
+
+  const artManifest =
+    typeof module !== 'undefined' && module.exports
+      ? require('./art_manifest.js')
+      : root.MARVEL_ART_MANIFEST;
 
   const MEDIUM_BY_ERA = {
     silver: 'silver-age-key',
@@ -30,31 +35,48 @@
 
   const CATALOG_BY_CHAR = {};
 
+  const charArtMap = (artManifest && artManifest.characters) || {};
+  const variantArtMap = (artManifest && artManifest.variants) || {};
+
   (charsModule ? charsModule.CHARACTERS : []).forEach((ch, idx) => {
     const catalogueNo = `MVO-${String(idx + 1).padStart(3, '0')}`;
-    const plates = (ch.variants || []).map((v, vIdx) => ({
-      plateId: `${ch.id}--${v.id}`,
-      characterId: ch.id,
-      variantId: v.id,
-      era: v.era || ch.eraIntroduced,
-      medium: vIdx === 0 ? MEDIUM_BY_ERA[ch.eraIntroduced] || 'modern-omnibus' : MEDIUM_BY_ERA[v.era] || 'multiverse-variant',
-      mediumLabel:
-        MEDIUM_LABELS[
-          vIdx === 0 ? MEDIUM_BY_ERA[ch.eraIntroduced] || 'modern-omnibus' : MEDIUM_BY_ERA[v.era] || 'multiverse-variant'
-        ],
-      label: v.name,
-      earth: v.earth,
-      issueCitation: ch.firstAppearance,
-      creators: ch.creators,
-      accent: v.coverAccent || (ch.coverTheme && ch.coverTheme.accent) || '#e62429',
-      curatorNote: v.note
-    }));
+    const baseArt = charArtMap[ch.id] || null;
+    const plates = (ch.variants || []).map((v, vIdx) => {
+      const plateId = `${ch.id}--${v.id}`;
+      const distinctArt = variantArtMap[plateId] || null;
+      const chosenArt = distinctArt || baseArt;
+      const medium =
+        vIdx === 0
+          ? MEDIUM_BY_ERA[ch.eraIntroduced] || 'modern-omnibus'
+          : MEDIUM_BY_ERA[v.era] || 'multiverse-variant';
+      return {
+        plateId,
+        characterId: ch.id,
+        variantId: v.id,
+        era: v.era || ch.eraIntroduced,
+        medium,
+        mediumLabel: MEDIUM_LABELS[medium],
+        label: v.name,
+        earth: v.earth,
+        issueCitation: ch.firstAppearance,
+        creators: ch.creators,
+        accent: v.coverAccent || (ch.coverTheme && ch.coverTheme.accent) || '#e62429',
+        curatorNote: v.note,
+        localPath: chosenArt ? chosenArt.localPath : null,
+        focalPoint: chosenArt ? chosenArt.focalPoint || 'center 15%' : 'center 15%',
+        width: chosenArt ? chosenArt.width || 340 : 340,
+        height: chosenArt ? chosenArt.height || 520 : 520,
+        sourceTitle: chosenArt ? chosenArt.sourceTitle || ch.name : ch.name,
+        isDistinctVariantArt: Boolean(distinctArt)
+      };
+    });
 
     CATALOG_BY_CHAR[ch.id] = {
       catalogueNo,
       rarityClass: ch.powerScore >= 96 || ch.omegaMutant ? 'omnibus-mythic' : 'key-issue',
       creators: ch.creators,
       firstAppearance: ch.firstAppearance,
+      primaryArt: baseArt,
       plates
     };
   });
@@ -87,12 +109,23 @@
     return out;
   }
 
+  function getArtCoverageStats() {
+    const charKeys = Object.keys(charArtMap);
+    const variantKeys = Object.keys(variantArtMap);
+    return {
+      archivedCharacters: charKeys.length,
+      archivedDistinctVariants: variantKeys.length,
+      totalArchivedFiles: charKeys.length + variantKeys.length
+    };
+  }
+
   const exported = {
     MEDIUM_LABELS,
     CATALOG_BY_CHAR,
     getArtworkForCharacter,
     getPlateForVariant,
-    getAllVaultPlates
+    getAllVaultPlates,
+    getArtCoverageStats
   };
 
   if (typeof module !== 'undefined' && module.exports) {

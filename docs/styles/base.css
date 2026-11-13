@@ -55,6 +55,11 @@
   --map-incursion: rgba(230, 36, 41, 0.55);
 
   --frame-bg: #0b1018;
+  --frame-backdrop-brightness: 0.42;
+  --frame-backdrop-opacity: 0.55;
+  --frame-chip-bg: rgba(9, 13, 20, 0.84);
+  --frame-chip-fg: #f4f7fb;
+  --frame-caption-bg: linear-gradient(180deg, transparent 0%, rgba(7, 11, 17, 0.88) 100%);
   --scrim-bg: rgba(4, 7, 12, 0.76);
   --lightbox-backdrop: rgba(4, 7, 12, 0.92);
   --lightbox-stage-bg: #090d14;
@@ -97,6 +102,11 @@ html[data-theme="light"] {
   --map-incursion: rgba(185, 28, 28, 0.5);
 
   --frame-bg: #e9e0ce;
+  --frame-backdrop-brightness: 0.78;
+  --frame-backdrop-opacity: 0.36;
+  --frame-chip-bg: rgba(24, 22, 21, 0.84);
+  --frame-chip-fg: #fffdf8;
+  --frame-caption-bg: linear-gradient(180deg, transparent 0%, rgba(24, 22, 21, 0.84) 100%);
   --scrim-bg: rgba(24, 22, 21, 0.46);
   --lightbox-backdrop: rgba(24, 22, 21, 0.82);
   --lightbox-stage-bg: #f3ede0;
